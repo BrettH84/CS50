@@ -77,6 +77,8 @@ def main():
         degrees = len(path)
         print(f"{degrees} degrees of separation.")
         path = [(None, source)] + path
+        print(path)
+        input()
         for i in range(degrees):
             person1 = people[path[i][1]]["name"]
             person2 = people[path[i + 1][1]]["name"]
@@ -92,22 +94,22 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
     explored = set()
-    frontier = QueueFrontier(Node(source, None, None))
+    frontier = QueueFrontier()
+    frontier.add(Node(source, None, None))
     while not frontier.empty():
-        node = QueueFrontier.remove()
+        node = frontier.remove()
         explored.add(node.state)
         connections = neighbors_for_person(node.state)
         for connection in connections:
-            if not connection[1] in explored:
+            if not connection[1] in explored and not frontier.contains_state(node.state):
                 new_node = Node(connection[1], node, connection[0])
                 if new_node.state == target:
                     ret_list = []
                     while not new_node.parent == None:
-                        ret_list.add((new_node.action, new_node.state))
+                        ret_list.append((new_node.action, new_node.state))
                         new_node = new_node.parent
-                    ret_list.add((new_node.action, new_node.state))
                     ret_list.reverse()
-                    return ret_list                
+                    return ret_list
                 frontier.add(new_node)
     return None
 
